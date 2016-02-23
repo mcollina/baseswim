@@ -27,6 +27,7 @@
     "tap": "^5.4.4"
   },
   "dependencies": {
+    "concat-stream": "^1.5.1",
     "minimist": "^1.2.0",
     "network-address": "^1.0.0",
     "pino": "^0.1.2",

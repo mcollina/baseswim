@@ -71,7 +71,7 @@ function BaseSwim (id, opts) {
       case 0:
         if (!set.has(event.host)) {
           set.add(event.host)
-          this.emit('peerUp', event.host)
+          this.emit('peerUp', event)
         }
         break
     }
@@ -82,15 +82,15 @@ function BaseSwim (id, opts) {
       case 0:
         if (!set.has(event.host)) {
           set.add(event.host)
-          this.emit('peerUp', event.host)
+          this.emit('peerUp', event)
         }
         break
       case 1:
-        this.emit('peerSuspect', event.host)
+        this.emit('peerSuspect', event)
         break
       case 2:
         set.delete(event.host)
-        this.emit('peerDown', event.host)
+        this.emit('peerDown', event)
         break
     }
   })
@@ -138,13 +138,13 @@ function start () {
     info('http server listening on port %d', port)
   })
   baseswim.on('peerUp', (peer) => {
-    info('peer online %s', peer)
+    info('peer online %s', peer.host)
   })
   baseswim.on('peerSuspect', (peer) => {
-    info('peer suspect %s', peer)
+    info('peer suspect %s', peer.host)
   })
   baseswim.on('peerDown', (peer) => {
-    info('peer offline %s', peer)
+    info('peer offline %s', peer.host)
   })
 }
 

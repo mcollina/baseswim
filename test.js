@@ -143,12 +143,12 @@ test('peerUp/peerDown events from the cluster perspective', { timeout: 5000 }, (
       second.leave()
     })
     instance.on('peerUp', (peer) => {
-      t.equal(peer, second.whoami())
+      t.equal(peer.host, second.whoami())
       instance.on('peerSuspect', (peer) => {
-        t.equal(peer, second.whoami())
+        t.equal(peer.host, second.whoami())
       })
       instance.on('peerDown', (peer) => {
-        t.equal(peer, second.whoami())
+        t.equal(peer.host, second.whoami())
       })
     })
   })
@@ -166,15 +166,15 @@ test('peerUp/peerDown events from the new node perspective', { timeout: 5000 }, 
     })
     t.tearDown(second.leave.bind(second))
     second.once('peerUp', (peer) => {
-      t.equal(peer, swim.whoami())
+      t.equal(peer.host, swim.whoami())
       second.once('peerUp', (peer) => {
-        t.equal(peer, instance.whoami())
+        t.equal(peer.host, instance.whoami())
         swim.leave()
         second.on('peerSuspect', (peer) => {
-          t.equal(peer, swim.whoami())
+          t.equal(peer.host, swim.whoami())
         })
         second.on('peerDown', (peer) => {
-          t.equal(peer, swim.whoami())
+          t.equal(peer.host, swim.whoami())
         })
       })
     })

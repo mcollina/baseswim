@@ -6,11 +6,10 @@ const networkAddress = require('network-address')
 const Swim = require('swim')
 const assert = require('assert')
 const inherits = require('util').inherits
-const http = require('http')
 const minimist = require('minimist')
 const pino = require('pino')
 const xtend = require('xtend')
-const concat = require('concat-stream')
+const control = require('./lib/control')
 const defaults = {
   joinTimeout: 5000,
   pingTimeout: 200, // increase the swim default 10 times
@@ -50,36 +49,7 @@ function BaseSwim (id, opts) {
       if (typeof opts.http === 'number') {
         opts.http = { port: parseInt(opts.http) }
       }
-      this._http = http.createServer((req, res) => {
-        if (req.url === '/members') {
-          const members = this.members()
-          members.unshift(this.membership.local.data())
-          res.writeHead(200, {
-            'Content-Type': 'application/json'
-          })
-          res.write(JSON.stringify({ members }, null, 2))
-          res.end('\n')
-        } else if (req.url === '/join' && req.method === 'POST') {
-          req.pipe(concat((peer) => {
-            peer = peer.toString()
-            this.join([peer], (err) => {
-              if (err) {
-                res.statusCode = 400
-                res.end(err.message)
-                return
-              }
-              res.statusCode = 200
-              res.end()
-            })
-          })).on('err', (err) => {
-            res.statusCode = 500
-            res.end(err.message)
-          })
-        } else {
-          res.statusCode = 404
-          res.end('not found\n')
-        }
-      })
+      this._http = control(this)
       this._http.listen(opts.http.port || 3000, (err) => {
         if (err) {
           this.emit('error', err)

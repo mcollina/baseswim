@@ -1,0 +1,36 @@
+{
+  "name": "baseswim",
+  "version": "0.0.2",
+  "description": "A base swim node",
+  "main": "baseswim.js",
+  "scripts": {
+    "test": "standard && tap test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcollina/baseswim.git"
+  },
+  "keywords": [
+    "base",
+    "swim"
+  ],
+  "author": "Matteo Collina <hello@matteocollina.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mcollina/baseswim/issues"
+  },
+  "homepage": "https://github.com/mcollina/baseswim#readme",
+  "devDependencies": {
+    "pre-commit": "^1.1.2",
+    "request": "^2.69.0",
+    "standard": "^6.0.5",
+    "tap": "^5.4.4"
+  },
+  "dependencies": {
+    "minimist": "^1.2.0",
+    "network-address": "^1.0.0",
+    "pino": "^0.1.2",
+    "swim": "https://github.com/mcollina/swim-js.git#ip-fix",
+    "xtend": "^4.0.1"
+  }
+}

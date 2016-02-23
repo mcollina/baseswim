@@ -62,6 +62,38 @@ function BaseSwim (id, opts) {
       this.emit('up')
     }
   })
+
+  // hacky fix to have stable events
+  let set = new Set()
+
+  this.on(Swim.EventType.Change, (event) => {
+    switch (event.state) {
+      case 0:
+        if (!set.has(event.host)) {
+          set.add(event.host)
+          this.emit('peerUp', event.host)
+        }
+        break
+    }
+  })
+
+  this.on(Swim.EventType.Update, (event) => {
+    switch (event.state) {
+      case 0:
+        if (!set.has(event.host)) {
+          set.add(event.host)
+          this.emit('peerUp', event.host)
+        }
+        break
+      case 1:
+        this.emit('peerSuspect', event.host)
+        break
+      case 2:
+        set.delete(event.host)
+        this.emit('peerDown', event.host)
+        break
+    }
+  })
 }
 
 inherits(BaseSwim, Swim)
@@ -105,22 +137,14 @@ function start () {
   baseswim.on('httpReady', (port) => {
     info('http server listening on port %d', port)
   })
-  baseswim.on(BaseSwim.EventType.Change, function (event) {
-    switch (event.state) {
-      case 0:
-        info('peer online %s', event.host)
-        break
-    }
+  baseswim.on('peerUp', (peer) => {
+    info('peer online %s', peer)
   })
-  baseswim.on(BaseSwim.EventType.Update, function (event) {
-    switch (event.state) {
-      case 1:
-        info('peer suspect %s', event.host)
-        break
-      case 2:
-        info('peer offline %s', event.host)
-        break
-    }
+  baseswim.on('peerSuspect', (peer) => {
+    info('peer suspect %s', peer)
+  })
+  baseswim.on('peerDown', (peer) => {
+    info('peer offline %s', peer)
   })
 }
 

@@ -138,13 +138,13 @@ function start () {
     info('http server listening on port %d', port)
   })
   baseswim.on('peerUp', (peer) => {
-    info('peer online %s', peer.host)
+    info(peer, 'peer online')
   })
   baseswim.on('peerSuspect', (peer) => {
-    info('peer suspect %s', peer.host)
+    info(peer, 'peer suspect')
   })
   baseswim.on('peerDown', (peer) => {
-    info('peer offline %s', peer.host)
+    info(peer, 'peer offline')
   })
 }
 

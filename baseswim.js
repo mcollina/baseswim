@@ -36,7 +36,11 @@ function BaseSwim (id, opts) {
   // initialize the current host with the id
   opts.local.host = opts.local.host || id
 
-  assert(opts.local.host, 'missing id or opts.local.host')
+  if (!opts.local.host && opts.port) {
+    opts.local.host = networkAddress() + ':' + opts.port
+  }
+
+  assert(opts.local.host, 'missing id or opts.local.host or opts.port')
 
   Swim.call(this, opts)
 
@@ -121,8 +125,7 @@ function start () {
       joinTimeout: 'j'
     },
     default: {
-      port: 7799,
-      host: networkAddress()
+      port: 7799
     }
   })
 
@@ -133,7 +136,7 @@ function start () {
 
   argv.base = argv._
 
-  let baseswim = new BaseSwim(argv.host + ':' + argv.port, argv)
+  let baseswim = new BaseSwim(argv)
   baseswim.on('httpReady', (port) => {
     info('http server listening on port %d', port)
   })
@@ -145,6 +148,9 @@ function start () {
   })
   baseswim.on('peerDown', (peer) => {
     info(peer, 'peer offline')
+  })
+  baseswim.on('up', (peer) => {
+    info({ id: baseswim.whoami() }, 'I am up')
   })
 }
 

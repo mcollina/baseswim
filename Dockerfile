@@ -21,4 +21,5 @@ RUN apk update && \
 COPY . /src
 
 EXPOSE 3000
+ENV SWIM_PORT=7799
 ENTRYPOINT ["node", "baseswim.js"]

@@ -17,7 +17,7 @@ docker pull matteocollina/baseswim
 ## Usage
 
 ```
-baseswim [--http 3000] [--port 7799] [peers...]
+baseswim [--http 3000] [--port PORT] [peers...]
 ```
 
 Each peer is in the form of IP:PORT, like 127.0.0.1:7799
@@ -25,7 +25,7 @@ Each peer is in the form of IP:PORT, like 127.0.0.1:7799
 ### with Docker
 
 ```
-docker run -p 3000:3000 -p 7799:7799/udp -d matteocollina/baseswim --host `docker-machine ip default` --http 3000 
+docker run -p 3000:3000 -p 7799:7799/udp -d matteocollina/baseswim --host `docker-machine ip default` --http 3000
 ```
 
 If you need to connect it to other peers pass any peer id at the end,

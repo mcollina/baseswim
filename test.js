@@ -94,6 +94,40 @@ test('comes up using automatic address lookup', (t) => {
   })
 })
 
+test('comes up using automatic address lookup and port lookup', (t) => {
+  t.plan(3)
+  let instance = baseswim()
+  t.tearDown(instance.leave.bind(instance))
+
+  instance.on('error', (err) => {
+    console.log('instance error', instance.whoami(), err.message)
+  })
+
+  instance.on('up', () => {
+    let swim = new Swim({
+      local: {
+        host: '127.0.0.1:' + nextPort++
+      }
+    })
+    swim.bootstrap([instance.whoami()], (err) => {
+      t.error(err)
+      t.tearDown(swim.leave.bind(swim))
+      t.deepEqual(instance.members(), [{
+        meta: undefined,
+        host: swim.whoami(),
+        state: 0,
+        incarnation: 0
+      }], 'parent members match')
+      t.deepEqual(swim.members(), [{
+        meta: undefined,
+        host: instance.whoami(),
+        state: 0,
+        incarnation: 0
+      }], 'child members match')
+    })
+  })
+})
+
 test('exposes /members over http', (t) => {
   t.plan(5)
   bootstrap(t, {

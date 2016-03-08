@@ -10,6 +10,7 @@ const minimist = require('minimist')
 const pino = require('pino')
 const xtend = require('xtend')
 const control = require('./lib/control')
+const udpFreePort = require('udp-free-port')
 const defaults = {
   joinTimeout: 5000,
   pingTimeout: 200, // increase the swim default 10 times
@@ -35,37 +36,6 @@ function BaseSwim (id, opts) {
 
   // initialize the current host with the id
   opts.local.host = opts.local.host || id
-
-  if (!opts.local.host && opts.port) {
-    opts.local.host = networkAddress() + ':' + opts.port
-  }
-
-  assert(opts.local.host, 'missing id or opts.local.host or opts.port')
-
-  Swim.call(this, opts)
-
-  this.bootstrap(opts.base, (err) => {
-    if (err) {
-      this.emit('error', err)
-      return
-    }
-    if (opts.http) {
-      if (typeof opts.http === 'number') {
-        opts.http = { port: parseInt(opts.http) }
-      }
-      this._http = control(this)
-      this._http.listen(opts.http.port || 3000, (err) => {
-        if (err) {
-          this.emit('error', err)
-          return
-        }
-        this.emit('httpReady', opts.http.port)
-        this.emit('up')
-      })
-    } else {
-      this.emit('up')
-    }
-  })
 
   // hacky fix to have stable events
   let set = new Set()
@@ -98,6 +68,55 @@ function BaseSwim (id, opts) {
         break
     }
   })
+
+  const boot = () => {
+    Swim.call(this, opts)
+
+    this.bootstrap(opts.base, (err) => {
+      if (err) {
+        this.emit('error', err)
+        return
+      }
+      if (opts.http) {
+        if (typeof opts.http === 'number') {
+          opts.http = { port: parseInt(opts.http) }
+        }
+        this._http = control(this)
+        this._http.listen(opts.http.port || 3000, (err) => {
+          if (err) {
+            this.emit('error', err)
+            return
+          }
+          this.emit('httpReady', opts.http.port)
+          this.emit('up')
+        })
+      } else {
+        this.emit('up')
+      }
+    })
+  }
+
+  const hostname = opts.host || networkAddress()
+
+  if (!opts.local.host && opts.port) {
+    opts.local.host = hostname + ':' + opts.port
+  } else if (!opts.local.host && !opts.port) {
+    udpFreePort((err, port) => {
+      if (err) {
+        this.emit('error', err)
+        return
+      }
+
+      opts.local.host = hostname + ':' + port
+      boot()
+    })
+
+    return
+  }
+
+  assert(opts.local.host, 'missing id or opts.local.host or opts.port')
+
+  boot()
 }
 
 inherits(BaseSwim, Swim)
@@ -125,12 +144,12 @@ function start () {
       joinTimeout: 'j'
     },
     default: {
-      port: 7799
+      port: process.env.SWIM_PORT
     }
   })
 
   if (argv.help) {
-    console.error('Usage:', process.argv[1], '[--port 7799] [--host YOURIP] base1 base2')
+    console.error('Usage:', process.argv[1], '[--port PORT] [--host YOURIP] base1 base2')
     process.exit(1)
   }
 

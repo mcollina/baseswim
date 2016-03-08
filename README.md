@@ -50,6 +50,20 @@ swim.on('peerDown', (peer) => console.log(peer))
 The swim instance is the same of [swim-js](http://npm.im/swim).
 See its README for the API.
 
+### constructor options
+
+If you do not pass any options, `baseswim` will bound to a network
+interface (not localhost) and pick a free udp port.
+
+You can also pass the host and port as parameters:
+
+```js
+const swim = baseswim({
+  host: '127.0.0.1',
+  port: 7799
+})
+```
+
 ## HTTP endpoints
 
 If enabled by the `--http` flag, baseswim provides two HTTP endpoint to

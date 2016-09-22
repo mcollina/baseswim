@@ -134,7 +134,7 @@ module.exports = BaseSwim
 
 function start () {
   const logger = pino()
-  const info = logger.info
+  const info = logger.info.bind(logger)
   const argv = minimist(process.argv.slice(2), {
     integer: ['port'],
     alias: {

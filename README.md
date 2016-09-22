@@ -24,6 +24,24 @@ Each peer is in the form of IP:PORT, like 127.0.0.1:7799
 
 ### with Docker
 
+On Linux:
+
+```
+docker run -p 3000:3000 -p 7799:7799/udp -d matteocollina/baseswim --host `ip addr show wlan0 | grep -Po 'inet \K[\d.]+'` --http 3000
+```
+
+__adjut the host configuration to your own interface/ip address__
+
+On Mac:
+
+```
+docker run -p 3000:3000 -p 7799:7799/udp -d matteocollina/baseswim --host `ipconfig getifaddr en0` --http 3000
+```
+
+__adjut the host configuration to your own interface/ip address__
+
+On docker-machine:
+
 ```
 docker run -p 3000:3000 -p 7799:7799/udp -d matteocollina/baseswim --host `docker-machine ip default` --http 3000
 ```

@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:4
+FROM mhart/alpine-node:6
 
 # uncomment for dev
 # RUN apk update && \

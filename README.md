@@ -57,7 +57,7 @@ like for the normal usage.
 const baseswim = require('baseswim')
 const id = '127.0.0.1:7799' // replace your ip address
 
-const swim = basewim(id, {
+const swim = baseswim(id, {
   http: 3000 // to enable the HTTP endpoints
 })
 
